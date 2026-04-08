@@ -1,10 +1,11 @@
+# Installing and Running Isaac ROS VSLAM for Autonomous Robotics I
 This repo explains how to start Isaac ROS VSLAM in Docker 
 after installing and running Isaac ROS Object Detection and Object 
 Tracking on Assignment 8 in Autonomous Robotics I.
 
-# Assumptions
-* You completed Assingmnet 8 with Object Tracking in Docker on Jetson Orin Nano.
-# Install Required VSLAM Assets
+## Assumptions
+You completed Assingmnet 8 with Object Tracking with YOLOv8 in Docker on Jetson Orin Nano.
+## Install Required VSLAM Assets
 1. Start the `isaac_ros_dev-aarch64-container` 
 ```shell
 docker start -a -i isaac_ros_dev-aarch64-container```
@@ -46,6 +47,15 @@ versions/$LATEST_VERSION_ID/files/$NGC_FILENAME" && \
     tar -xf ${NGC_FILENAME} -C ${ISAAC_ROS_WS}/isaac_ros_assets && \
     rm ${NGC_FILENAME}
 fi
+```
+## Installing Isaac ROS VSLAM
+In this step we install VSLAM from binaries since we don't intend to modify the souce code.   
+Inside the container:   
+```shell
+sudo apt-get update
+```
+```shell
+sudo apt-get install -y ros-humble-isaac-ros-examples
 ```
 
 
