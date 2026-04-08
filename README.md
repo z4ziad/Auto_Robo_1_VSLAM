@@ -84,10 +84,15 @@ interface_specs_file:=${ISAAC_ROS_WS}/isaac_ros_assets/isaac_ros_visual_slam/qui
 base_frame:=camera_link camera_optical_frames:="['camera_infra1_optical_frame', 'camera_infra2_optical_frame']"
 ```
 ## Visualize the Output
-Connect the running Docker container:
+Connect to the running Docker container:
 ```shell
 docker exec -it -u admin isaac_ros_dev-aarch64-container /bin/bash
 ```
+Test that the `visual_vslam` is publishing its topics:
+```shell
+ros2 topic list
+```
+You should see 
 Then run RViz to visualize the vslam output:
 ```shell
 rviz2 -d $(ros2 pkg prefix isaac_ros_visual_slam --share)/rviz/default.cfg.rviz
