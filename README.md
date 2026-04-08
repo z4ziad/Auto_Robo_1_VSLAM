@@ -6,15 +6,15 @@ Tracking on Assignment 8 in Autonomous Robotics I.
 ## Assumptions
 You completed Assingmnet 8 with Object Tracking with YOLOv8 in Docker on Jetson Orin Nano.
 ## Install Required VSLAM Assets
-1. Start the `isaac_ros_dev-aarch64-container` 
+1. Start the `isaac_ros_dev-aarch64-container`    
 ```shell
 docker start -a -i isaac_ros_dev-aarch64-container```
 ```
-Inside the container, make sure we have the required libraries
+2. Inside the container, make sure we have the required libraries
 ```shell
 sudo apt-get install -y curl jq tar
 ```
-Then download the assets from NGC:
+3. Then download the assets from NGC:
 ```shell
 NGC_ORG="nvidia"
 NGC_TEAM="isaac"
