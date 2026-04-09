@@ -4,7 +4,7 @@ after installing and running Isaac ROS Object Detection and Object
 Tracking on Assignment 8 in Autonomous Robotics I.
 
 ## Assumptions
-You completed Assingmnet 8 with Object Tracking with YOLOv8 in Docker on Jetson Orin Nano and the RealSense 435i camera. 
+You completed Assignment 8 with Object Tracking with YOLOv8 in Docker on Jetson Orin Nano and the RealSense 435i camera. 
 ## Install the Required Assets
 1. Start the `isaac_ros_dev-aarch64-container`    
 ```shell
@@ -74,7 +74,7 @@ profile: '640x360x30'
 The profile with `'640x360x90'` with 90 FPS is not valid.    
 
 ## Launch VSLAM
-Now that your installation is complete, let's launch VSLAM. We are assuming that you already installed `ros_humble-isaac-ros-example` and `ros-humble-isaac-ros-realsense` for the previous Assinments. If you get a message saying that the "realsense camera was not found", unplug and then replug the camera cable (There is software fix for this issue, but let's not worry about it for the time being).    
+Now that your installation is complete, let's launch VSLAM. We are assuming that you already installed `ros_humble-isaac-ros-example` and `ros-humble-isaac-ros-realsense` for the previous Assignments. If you get a message saying that the "realsense camera was not found", unplug and then re-plug the camera cable (There is software fix for this issue, but let's not worry about it for the time being).    
 ```shell
 cd /workspaces/isaac_ros_dev
 ```
@@ -149,7 +149,8 @@ If all is good, then run RViz to visualize the vslam output:
 ```shell
 rviz2 -d $(ros2 pkg prefix isaac_ros_visual_slam --share)/rviz/default.cfg.rviz
 ```
-When RViz comes up, you should see a screen containing the map point cloud and the robot and camera pose and orientation indicated with a red arrow. Zoom in on the map with the mouse cursor, and move the robot with the camera manually left and right and watch the map being built in real-time. Make sure the press and drag to examine the map in 3D! 
+When RViz comes up, you should see a screen containing the map point cloud and the robot and camera pose and orientation indicated with a red arrow, ![as shown below](https://github.com/z4ziad/Auto_Robo_1_VSLAM/blob/main/vslam1.gif).    
+Zoom in on the map with the mouse cursor, and move the robot with the camera manually left and right and watch the map being built in real-time. Make sure the press and drag to examine the map in 3D!
 
 
 
