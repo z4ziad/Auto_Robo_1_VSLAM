@@ -1,6 +1,5 @@
 # Setting up VSLAM for Autonomous Robotics I, ECE, CMU
-This repo explains how to set up Isaac ROS VSLAM in Docker 
-after installing and running Isaac ROS Object Detection and Object Tracking on Assignment 8 in Autonomous Robotics I. This is Part 1 of the VSLAM. In part 2, we move the robots with a gamepad controller to create a map of the robot's environment and test its localization ability. 
+This repo explains how to set up Isaac ROS VSLAM in Docker after installing and running Isaac ROS Object Detection and Object Tracking on Assignment 8 in Autonomous Robotics I. This is Part 1 of the VSLAM. In part 2, we move the robots with a gamepad controller to create a map of the robot's environment and test its localization ability. 
 
 ## Assumptions
 You completed Assignment 8 with Object Tracking with YOLOv8 in Docker on Jetson Orin Nano and the RealSense 435i camera. 
@@ -59,12 +58,12 @@ sudo apt-get install -y ros-humble-isaac-ros-visual-slam
 ```
 ## Modify the RealSense Infrared Camera Frame Rate
 Since this VLSAM package relies on the stereo vision of the infrared cameras on the RealSense 435i, we need to modify the default infrared frame rate configuration so we get a "good" balance between the frame rate and resolution. Running at 30Hz should be good enough for mapping while the robot is moving and detecting good features to track (GFTT). A profile of 640x480x30 is workable profile.    
-We need also to tell `visual_vslam_node` expect 30Hz frame rate, i.e., at least 33ms, otherwise, it would think some frames are dropped.    
+We need also to tell `visual_vslam_node` to expect 30Hz frame rate, i.e., at least 33ms, otherwise, it would think some frames are dropped.
 Run the following commands to find out the valid modes for your RealSense camera. The modes depend on the firmware version, which should be at least 5.13
 ```bash
 rs-enumerate-devices -c
 ```
-The above command puts out a lot of output. Scroll up and look for the "Supported modes:" section. One the valid modes should be `Infrared 1 640x480 Y8 @ 30/15/6 Hz` so let's go with that. First backup the original VSLAM launch file:
+The above command puts out a lot of output. Scroll up and look for the "Supported modes:" section. One the valid modes should be `Infrared 1 640x480 Y8 @ 30/15/6 Hz` o let's go with that. First backup the original VSLAM launch file:
 ```bash
 cd /opt/ros/humble/share/isaac_ros_visual_slam/launch
 cp isaac_ros_visual_slam_realsense.launch.py isaac_ros_visual_slam_realsense.launch_orig.py
@@ -142,13 +141,13 @@ and you should see the topics:
 ```
 If all is good, then let's visualize the VSLAM output.
 ## Visualize VSLAM Output with Foxglove
-It is critical in robotics not to visualize the output on the same compute platform as the robot as it might take away too much compute resources from the robot itself. [Foxglove](https://foxglove.dev/) is a service that lets us easily visualize the output for VSLAM on your laptop or desktop.  
+It is critical in robotics not to visualize the output on the same compute platform as the robot as it might take away too much compute resources from the robot itself. [Foxglove](https://foxglove.dev/) s a service that lets us easily visualize the output for VSLAM on your laptop or desktop.   
 
 **Note 1:** Sign up for Foxglove using your CMU email so you can get the educational version free with most bandwidth and storage.
 
 **Note 2:** If you are using a browser to visualize your data, you must use Chrome browser to be compatible with Foxglove background scripts and must give it permission to load scripts. 
 
-At first, we want to test Foxglove while the robot being **tethered to power and display and being static**. I will have separate document for testing visualization with the robot being **untethered and mobile.**  
+At first, we want to test Foxglove while the robot being **tethered to power and display and being static**. I will have separate document for testing visualization with the robot being untethered and mobile. 
      
 To get started, connect to the running `isaac_ros_dev-aarch64-container` container:    
 ```bash
