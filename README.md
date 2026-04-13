@@ -144,7 +144,9 @@ If all is good, then let's visualize the VSLAM output.
 ## Visualize VSLAM Output with Foxglove
 It is critical in robotics not to visualize the output on the same compute platform as the robot as it might take away too much compute resources from the robot itself. [Foxglove](https://foxglove.dev/) is a service that lets us easily visualize the output for VSLAM on your laptop or desktop.  
 
-**Note:** Sign up for Foxglove using your CMU email so you can get the educational version free with most bandwidth and storage.   
+**Note 1:** Sign up for Foxglove using your CMU email so you can get the educational version free with most bandwidth and storage.
+
+**Note 2:** If you are using a browser to visualize your data, you must use Chrome browser to be compatible with Foxglove background scripts and must give it permission to load scripts. 
 
 At first, we want to test the Foxglove while the robot being **tethered to power and display and being static**. I will have separate document for testing visualization with the robot being **untethered and mobile.**  
      
@@ -152,14 +154,14 @@ To get started, connect to the running `isaac_ros_dev-aarch64-container` contain
 ```bash
 docker exec -it -u admin isaac_ros_dev-aarch64-container /bin/bash
 ```
-Then follow the [instructions](https://docs.foxglove.dev/docs/getting-started/frameworks/ros2?modality=live) from Foxglove ROS2 to install the **foxglove bridge** inside the `isaac_ros_dev-aarch64-container`. Launch the foxglove bridge by connecting then connect your laptop/desktop to it to visualize the topics' data.      
+Then follow the [instructions](https://docs.foxglove.dev/docs/getting-started/frameworks/ros2?modality=live) from Foxglove ROS2 to install the **foxglove bridge** inside the `isaac_ros_dev-aarch64-container`. Launch the foxglove bridge by connecting your laptop/desktop to it to visualize the topics' data.      
 
 You can download and apply the foxglove JSON layout file from this repo to make it easier to get the right panels.  
 
 In one of the camera panels: pick one of the two infrared stereo vision, e.g. `/camera/infra1/image_rect_raw`.
 
 In the 3D panel, turn on `/visual_slam/vis/landmarks_cloud` so you can see the created map. Move the robot manually with your hands to verify that the visualization is working. You can also turn on the `/visual_slam/tracking/slam_path` and 
-`/visual_slam/tracking/vo_path`.   
+`/visual_slam/tracking/vo_path`. Here is an example screenshot ![](Screenshot_chrome1.png) of my foxglove visualization.  
 
 Next part, moving robot with a gamepad controller to create a map!
 
