@@ -155,7 +155,14 @@ docker exec -it -u admin isaac_ros_dev-aarch64-container /bin/bash
 ```
 Then follow the [instructions](https://docs.foxglove.dev/docs/getting-started/frameworks/ros2?modality=live) from Foxglove ROS2 to install the **foxglove bridge** inside the `isaac_ros_dev-aarch64-container`. Launch the foxglove bridge by connecting your laptop/desktop to it to visualize the topics' data.      
 
-You can download and apply the foxglove JSON layout file from this repo to make it easier to get the right panels.  
+You can download and apply the [foxglove JSON layout file](https://github.com/z4ziad/Autonomous_Robotics_I-VSLAM-ECE-CMU/blob/main/foxglove_layout_realsense_mask.json) from this repo to make it easier to get the right panels.  
+
+After apply the layout, establish a connection from the Foxglove UI to the robot by getting the Jetson IP address:
+```bash
+hostname -I
+```
+Replace localhost with the Jetson IP address.    
+
 
 In one of the camera panels: pick one of the two infrared stereo vision, e.g. `/camera/infra1/image_rect_raw`.
 
