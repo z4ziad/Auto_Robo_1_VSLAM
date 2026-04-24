@@ -1,4 +1,4 @@
-This repo provides instructions for creating a 3D map using Isaac ROS VSLAM for the Autonomous Robotics I in ECE at CMU. 
+This file provides instructions for creating a 3D map using Isaac ROS VSLAM for the Autonomous Robotics I in ECE at CMU. 
 ## Assumption
 You already installed and tested Isaac ROS VSLAM and visualized its output remotely for [Assignment 9, Part I.](https://github.com/z4ziad/Autonomous_Robotics_I-VSLAM-ECE-CMU)
 ## Installing OLED IP Driver
@@ -20,7 +20,7 @@ Another option to connect remotely the Jetson is through VScode running on your 
 Launch VSLAM and visualize its output using Foxglove as you did in Part I of this Assignment
 Create a 3D map of the robot enclosure made for the course. See instructions on Canvas on when and where the course robotic enclosure will be available.   
 ## Saving the Map
-While Isaac ROS VSLAM is running on the Jetson, establish a new remote SSH connection to the Jetson and connect the Isaac_ros-dev-aarch64 container:
+Once you have a map that you would like to save for later localization, you can save to a file on secondary storage like the SSD. While Isaac ROS VSLAM is running on the Jetson, establish a new remote SSH connection to the Jetson and connect the Isaac_ros-dev-aarch64 container:
 ```bash
 docker exec -it -u admin isaac_ros_dev-aarch64-container /bin/bash 
 ```
@@ -42,27 +42,75 @@ mkdir -p /workspaces/isaac_ros-dev/maps
 ros2 service call /visual_slam/save_map isaac_ros_visual_slam_interfaces/srv/FilePath "{file_path: '/workspaces/isaac_ros-dev/maps/my_map'}"
 ```
 ## Loading the Map and Localizing the Robot
-Stop Isaac ROS VSLAM and any Foxglove visualization. Move the robot to a new location in the enclosure that was mapped (this is called the kidnapped robot problem).    
-Restart VSLAM and the Foxglove visualization. Run the following commands and inspect their output: 
-```bash
-ros2 service type /visual_slam/localize_in_map
-ros2 interface show isaac_ros_visual_slam_interfaces/srv/LocalizeInMap
+### The Concept
+Now suppose you already have a map you created and saved with cuVSLAM, and you want to start VSLAM with that map. cuVSLAM, however, does not search the entire map to localize the robot. It can only localize with a hint about the current robot pose within the map. Localizing the robot anywhere on a map is better handled by cuVGL, Nvidia's Visual Global Localization. cuVGL can estimate a robot's global pose using its database of keyframe images and a Bag-of-Words index. cuVGL first estimates a global pose to bootstrap cuVSLAM localization. Once cuVSLAM successfully localizes, cuVGL stops, and cuVSLAM begins continuously localizing in the map frame.   
+
+### Procedure Overview
+Since we are not using cuVGL in this assignment, we can ask cuVSLAM to localize the robot using a hint. The default hint location is at the map origin, {x:0, y:0, z:0}, with a quaternion orientation of {x:0, y:0, z:0, w:1}, which represents no rotation. Therefore, if you place the robot roughly in the same spot, within about a 1.5-meter radius, and with the same orientation (i.e., the default hint) as when you started VSLAM and created the map, then cuVSLAM should be able to successfully load the saved map and localize within it.   
+### Localize at Startup
+It is easier to test cuVSLAM localization in an existing map if we do it at startup. Therefore, we need to pass arguments to the cuVSLAM node at startup to tell it to load our saved map and then localize within it.   
+### Passing Arguments Through the Launch File
+To pass command-line arguments to a node started with a ROS2 "launch" file, the launch file must receive the arguments and pass them to the node. Here is how to do it:     
+
+Save the VSLAM launch file before you modify it:   
+   ```bash
+   cd /opt/ros/humble/share/isaac_ros_visual_slam/launch/
+   cp isaac_ros_visual_slam_realsense.launch.py isaac_ros_visual_slam_realsense_orig.launch.py
+   ```
+Sudo edit the `isaac_ros_visual_slam_realsense.launch.py` to make the following changes:
+  * Add the needed Python modules for launch arguments and configurations:
+  ```Python
+  import launch
+from launch.actions import DeclareLaunchArgument
+from launch.substitutions import LaunchConfiguration
+from launch_ros.actions import ComposableNodeContainer, Node
+from launch_ros.descriptions import ComposableNode, ParameterValue
 ```  
-Load the map and localize:
-```bash
-ros2 service call /visual_slam/localize_in_map isaac_ros_visual_slam_interfaces/srv/LocalizeInMap "
-map_folder_path: '/path/to/your/map'
-pose_hint:
-  position:
-    x: 0.0
-    y: 0.0
-    z: 0.0
-  orientation:
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 1.0"
+
+   * Declare launch arguments first thing inside the `generate_launch_description()` function:
+```Python
+def generate_launch_description():
+
+    # Declare launch arguments
+    localize_on_startup_arg = DeclareLaunchArgument(
+        'localize_on_startup',
+        default_value='False',
+        description='Whether to localize against an existing map on startup.',
+    )
+    load_map_folder_path_arg = DeclareLaunchArgument(
+        'load_map_folder_path',
+        default_value='',
+        description='Path to the map folder to load at startup.',
+    )
+    ...
+    ...
 ```
-Watch on Foxglove if the robot is able to localize itself on the new location in the map.   
-* The pose_hint doesn't need to be exact, but it should be reasonably close to the robot's actual position in the map.
-* If localization is successful, cuVSLAM will load the map into memory. Otherwise, it will continue building a new map. 
+  * Enable the localization and mapping option by **adding** the following parameter to the `visual_slam_node`
+```Python
+'enable_localization_n_mapping': True
+```
+  * Finally, make sure the `generate_launch_description()` functions passes the arguments to the node upon returning:
+```Python
+return launch.LaunchDescription([
+        localize_on_startup_arg,
+        load_map_folder_path_arg,
+        visual_slam_launch_container,
+        realsense_camera_node])
+```
+Now that you modified the VSLAM launch file to pass the optional arguments the load a map and localize in it, let's test it out.   
+   * Position the robot at the map origin marked in your map when you saved it. This should be the location of when started creating the map with VSLAM. Also, orient the robot roughly in the same direction as you did when you started creating the map.
+   * Launch VSLAM with the arguments to load the map and localize:
+  ```bash
+  cd \workspaces\isaac_ros-dev\
+  ros2 launch isaac_ros_visual_slam isaac_ros_visual_slam_realsense.launch.py localize_on_startup:=True load_map_folder_path:=/workspaces/isaac_ros-dev/<path_to_your_map_dir>   
+```
+  * Make sure to supply the proper path above where you saved your map.    
+  
+VSLAM should launch and if it is able to load the map and localize, you should see the following VSLAM output message scrolling by:
+```text
+[visual_slam_node]: Successfully localized at {0.044609, 0.003771, -0.003902}
+```
+Note that {x, y, z} values above are where the VSLAM thinks the robot is currently after localization.    
+
+Reconnect to Foxglove and check that the 3D map is loaded and that the robot visually looks where it is currently. You can continue building the map and saving it as a new one if you would like.
+
