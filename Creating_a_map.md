@@ -112,5 +112,5 @@ VSLAM should launch and if it is able to load the map and localize, you should s
 ```
 Note that {x, y, z} values above are where the VSLAM thinks the robot is currently after localization.    
 
-Reconnect to Foxglove and check that the 3D map is loaded and that the robot visually looks where it is currently. You can continue building the map and saving it as a new one if you would like.
+Reconnect to Foxglove and check that the 3D map is loaded and that the robot visually looks where it is currently. It might take a few seconds to update the map. You can continue building the map and saving it as a new one if you would like.
 
